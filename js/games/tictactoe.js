@@ -1,20 +1,18 @@
-// ========================================
-// TIC TAC TOE GAME
-// ========================================
-
-const tictactoeGame = {
-    board: ['', '', '', '', '', '', '', '', ''],
-    currentPlayer: 'X',
-    gameActive: false,
-    playerScore: 0,
-    aiScore: 0,
-    drawScore: 0,
+// Tic Tac Toe Game
+class TicTacToe {
+    constructor() {
+        this.board = Array(9).fill(null);
+        this.isXNext = true;
+        this.gameOver = false;
+        this.scores = { player: 0, ai: 0, draws: 0 };
+        this.init();
+    }
 
     init() {
         this.loadScores();
         this.setupEventListeners();
-        this.resetGame();
-    },
+        this.render();
+    }
 
     setupEventListeners() {
         const cells = document.querySelectorAll('#tictactoe-board .cell');
@@ -24,213 +22,148 @@ const tictactoeGame = {
 
         const resetBtn = document.getElementById('ttt-reset');
         const resetScoresBtn = document.getElementById('ttt-reset-scores');
-
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => this.resetGame());
-        }
-        if (resetScoresBtn) {
-            resetScoresBtn.addEventListener('click', () => this.resetScores());
-        }
-    },
-
-    loadScores() {
-        const tttStats = appState.scores.tictactoe;
-        this.playerScore = tttStats.wins || 0;
-        this.aiScore = tttStats.losses || 0;
-        this.drawScore = tttStats.draws || 0;
-        this.updateScoreDisplay();
-    },
-
-    resetGame() {
-        this.board = ['', '', '', '', '', '', '', '', ''];
-        this.currentPlayer = 'X';
-        this.gameActive = true;
-        this.updateBoardDisplay();
-        this.updateStatus('Your turn (X)');
-    },
-
-    resetScores() {
-        if (confirm('Reset all scores to 0?')) {
-            this.playerScore = 0;
-            this.aiScore = 0;
-            this.drawScore = 0;
-            updateTicTacToeStats('reset');
-            appState.scores.tictactoe = { wins: 0, losses: 0, draws: 0 };
-            localStorage.setItem('tictactoeScores', JSON.stringify(appState.scores.tictactoe));
-            this.updateScoreDisplay();
-            this.resetGame();
-            playSound('click');
-        }
-    },
+        if (resetBtn) resetBtn.addEventListener('click', () => this.reset());
+        if (resetScoresBtn) resetScoresBtn.addEventListener('click', () => this.resetScores());
+    }
 
     handleCellClick(index) {
-        if (!this.gameActive || this.board[index] !== '' || this.currentPlayer !== 'X') {
-            return;
-        }
-
+        if (this.board[index] || this.gameOver) return;
+        
         this.board[index] = 'X';
-        this.currentPlayer = 'O';
-        this.updateBoardDisplay();
-        playSound('click');
-
-        const result = this.checkResult();
-        if (result) {
-            this.endGame(result);
+        this.render();
+        
+        if (this.checkWinner()) {
+            this.gameOver = true;
+            this.scores.player++;
+            this.updateStatus('You won! 🎉');
+            this.saveScores();
             return;
         }
 
-        this.updateStatus('AI is thinking...');
+        if (this.isBoardFull()) {
+            this.gameOver = true;
+            this.scores.draws++;
+            this.updateStatus('Draw!');
+            this.saveScores();
+            return;
+        }
+
+        this.isXNext = false;
+        this.render();
         setTimeout(() => this.aiMove(), 500);
-    },
+    }
 
     aiMove() {
-        // Get best move
-        const bestMove = this.getBestMove();
-        this.board[bestMove] = 'O';
-        this.updateBoardDisplay();
-        playSound('click');
+        const emptyIndices = this.board
+            .map((cell, idx) => cell === null ? idx : null)
+            .filter(val => val !== null);
+        
+        if (emptyIndices.length === 0) return;
+        
+        const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+        this.board[randomIndex] = 'O';
+        this.render();
 
-        const result = this.checkResult();
-        if (result) {
-            this.endGame(result);
+        if (this.checkWinner('O')) {
+            this.gameOver = true;
+            this.scores.ai++;
+            this.updateStatus('AI won!');
+            this.saveScores();
             return;
         }
 
-        this.currentPlayer = 'X';
-        this.updateStatus('Your turn (X)');
-    },
-
-    getBestMove() {
-        const winningMoves = this.findWinningMoves('O');
-        if (winningMoves.length > 0) {
-            return winningMoves[0];
+        if (this.isBoardFull()) {
+            this.gameOver = true;
+            this.scores.draws++;
+            this.updateStatus('Draw!');
+            this.saveScores();
+            return;
         }
 
-        const blockingMoves = this.findWinningMoves('X');
-        if (blockingMoves.length > 0) {
-            return blockingMoves[0];
-        }
+        this.isXNext = true;
+        this.render();
+    }
 
-        // Prefer center
-        if (this.board[4] === '') return 4;
-
-        // Take corners
-        const corners = [0, 2, 6, 8].filter(i => this.board[i] === '');
-        if (corners.length > 0) {
-            return corners[Math.floor(Math.random() * corners.length)];
-        }
-
-        // Take sides
-        const sides = [1, 3, 5, 7].filter(i => this.board[i] === '');
-        return sides[Math.floor(Math.random() * sides.length)];
-    },
-
-    findWinningMoves(player) {
-        const winningCombos = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
+    checkWinner(player = 'X') {
+        const lines = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
         ];
+        return lines.some(line => line.every(i => this.board[i] === player));
+    }
 
-        const availableMoves = [];
-        winningCombos.forEach(combo => {
-            const values = combo.map(i => this.board[i]);
-            const playerCount = values.filter(v => v === player).length;
-            const emptyCount = values.filter(v => v === '').length;
-
-            if (playerCount === 2 && emptyCount === 1) {
-                const emptyIndex = combo[values.indexOf('')];
-                availableMoves.push(emptyIndex);
-            }
-        });
-
-        return availableMoves;
-    },
-
-    checkResult() {
-        const winningCombos = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
-        ];
-
-        for (let combo of winningCombos) {
-            const [a, b, c] = combo;
-            if (
-                this.board[a] &&
-                this.board[a] === this.board[b] &&
-                this.board[a] === this.board[c]
-            ) {
-                return this.board[a];
-            }
-        }
-
-        if (this.board.every(cell => cell !== '')) {
-            return 'DRAW';
-        }
-
-        return null;
-    },
-
-    endGame(result) {
-        this.gameActive = false;
-
-        if (result === 'X') {
-            this.updateStatus('🎉 You Won! Congratulations!');
-            this.playerScore++;
-            updateTicTacToeStats('win');
-            playSound('win');
-        } else if (result === 'O') {
-            this.updateStatus('😔 AI Won! Try again.');
-            this.aiScore++;
-            updateTicTacToeStats('loss');
-            playSound('error');
-        } else if (result === 'DRAW') {
-            this.updateStatus("🤝 It's a Draw!");
-            this.drawScore++;
-            updateTicTacToeStats('draw');
-            playSound('success');
-        }
-
-        this.updateScoreDisplay();
-    },
-
-    updateBoardDisplay() {
-        const cells = document.querySelectorAll('#tictactoe-board .cell');
-        cells.forEach((cell, index) => {
-            cell.textContent = this.board[index];
-            cell.className = 'cell';
-            if (this.board[index] === 'X') {
-                cell.classList.add('x');
-            } else if (this.board[index] === 'O') {
-                cell.classList.add('o');
-            }
-        });
-    },
+    isBoardFull() {
+        return this.board.every(cell => cell !== null);
+    }
 
     updateStatus(message) {
         const statusEl = document.getElementById('ttt-status');
-        if (statusEl) {
-            statusEl.textContent = message;
+        if (statusEl) statusEl.textContent = message;
+    }
+
+    render() {
+        const cells = document.querySelectorAll('#tictactoe-board .cell');
+        cells.forEach((cell, index) => {
+            cell.textContent = this.board[index];
+            cell.classList.remove('x', 'o');
+            if (this.board[index] === 'X') cell.classList.add('x');
+            if (this.board[index] === 'O') cell.classList.add('o');
+        });
+
+        if (!this.gameOver) {
+            this.updateStatus(this.isXNext ? 'Your turn (X)' : 'AI thinking...');
         }
-    },
+
+        this.updateScoreDisplay();
+    }
 
     updateScoreDisplay() {
-        document.getElementById('ttt-player-score').textContent = this.playerScore;
-        document.getElementById('ttt-ai-score').textContent = this.aiScore;
-        document.getElementById('ttt-draw-score').textContent = this.drawScore;
-    }
-};
+        const playerScore = document.getElementById('ttt-player-score');
+        const aiScore = document.getElementById('ttt-ai-score');
+        const drawScore = document.getElementById('ttt-draw-score');
+        const winsStats = document.getElementById('ttt-wins-stat');
+        const aiWinsStats = document.getElementById('ttt-ai-wins-stat');
+        const drawsStats = document.getElementById('ttt-draws-stat');
 
-// Export for use in main.js
-window.tictactoeGame = tictactoeGame;
+        if (playerScore) playerScore.textContent = this.scores.player;
+        if (aiScore) aiScore.textContent = this.scores.ai;
+        if (drawScore) drawScore.textContent = this.scores.draws;
+        if (winsStats) winsStats.textContent = this.scores.player;
+        if (aiWinsStats) aiWinsStats.textContent = this.scores.ai;
+        if (drawsStats) drawsStats.textContent = this.scores.draws;
+    }
+
+    reset() {
+        this.board = Array(9).fill(null);
+        this.isXNext = true;
+        this.gameOver = false;
+        this.render();
+    }
+
+    resetScores() {
+        if (confirm('Reset all scores?')) {
+            this.scores = { player: 0, ai: 0, draws: 0 };
+            this.reset();
+            this.saveScores();
+        }
+    }
+
+    saveScores() {
+        localStorage.setItem('tictactoe_scores', JSON.stringify(this.scores));
+    }
+
+    loadScores() {
+        const saved = localStorage.getItem('tictactoe_scores');
+        if (saved) {
+            this.scores = JSON.parse(saved);
+            this.updateScoreDisplay();
+        }
+    }
+}
+
+// Initialize Tic Tac Toe when game section is shown
+let tictactoeGame = null;
+document.addEventListener('DOMContentLoaded', () => {
+    tictactoeGame = new TicTacToe();
+});

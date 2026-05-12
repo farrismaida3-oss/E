@@ -1,192 +1,149 @@
-// ========================================
-// MEMORY MATCHING GAME
-// ========================================
-
-const memoryGame = {
-    cards: [],
-    flippedCards: [],
-    matchedPairs: 0,
-    moves: 0,
-    gameActive: false,
-    difficulty: 'medium',
-    startTime: null,
-    bestTime: null,
-    gameTime: 0,
-
-    symbols: ['🌟', '🎮', '🎨', '🎭', '🎪', '🎯', '🎲', '🎸', '🎹', '🎺', '🎻', '🥁'],
+// Memory Match Game
+class MemoryGame {
+    constructor() {
+        this.cards = [];
+        this.flipped = [];
+        this.matched = [];
+        this.moves = 0;
+        this.startTime = null;
+        this.gameActive = false;
+        this.difficulty = 'medium';
+        this.init();
+    }
 
     init() {
-        this.loadBestTime();
         this.setupEventListeners();
-        this.createGame();
-    },
+        this.createCards();
+    }
 
     setupEventListeners() {
         const startBtn = document.getElementById('memory-start');
         const resetBtn = document.getElementById('memory-reset');
         const difficultySelect = document.getElementById('memory-difficulty');
 
-        if (startBtn) {
-            startBtn.addEventListener('click', () => this.createGame());
-        }
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => this.createGame());
-        }
+        if (startBtn) startBtn.addEventListener('click', () => this.startGame());
+        if (resetBtn) resetBtn.addEventListener('click', () => this.reset());
         if (difficultySelect) {
             difficultySelect.addEventListener('change', (e) => {
                 this.difficulty = e.target.value;
-                this.createGame();
+                this.reset();
+                this.createCards();
             });
         }
-    },
+    }
 
-    loadBestTime() {
-        const scores = appState.scores.memory;
-        if (scores.length > 0) {
-            this.bestTime = Math.min(...scores.map(s => s.time));
-        }
-        this.updateBestTimeDisplay();
-    },
-
-    createGame() {
-        this.cards = [];
-        this.flippedCards = [];
-        this.matchedPairs = 0;
-        this.moves = 0;
-        this.gameActive = true;
-        this.startTime = Date.now();
-        this.gameTime = 0;
-
-        // Set up cards based on difficulty
-        let pairCount = 0;
-        if (this.difficulty === 'easy' || this.difficulty === 'medium') {
-            pairCount = 8; // 4x4 grid
-        } else if (this.difficulty === 'hard') {
-            pairCount = 18; // 6x6 grid
-        }
-
-        // Create pairs
-        const gameSymbols = this.symbols.slice(0, pairCount);
-        gameSymbols.forEach((symbol, index) => {
-            this.cards.push({ id: index * 2, symbol, matched: false });
-            this.cards.push({ id: index * 2 + 1, symbol, matched: false });
-        });
-
-        // Shuffle
-        this.cards.sort(() => Math.random() - 0.5);
-
-        this.renderBoard();
-        this.updateStats();
-    },
-
-    renderBoard() {
+    createCards() {
         const board = document.getElementById('memory-board');
+        if (!board) return;
+
+        const sizes = { easy: 8, medium: 8, hard: 36 };
+        const size = sizes[this.difficulty];
+        const cols = this.difficulty === 'hard' ? 6 : 4;
+        board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         board.innerHTML = '';
 
-        let gridClass = 'grid-4';
-        if (this.difficulty === 'hard') {
-            gridClass = 'grid-6';
-        }
-        board.className = `memory-board ${gridClass}`;
+        const emojis = ['🍎', '🍌', '🍒', '🍓', '🍊', '🍋', '🥝', '🍉', '🍇', '🍈', '🍍', '🥭', '🍑', '🍐', '🍏', '🥗', '🌽', '🥕'];
+        const pairs = emojis.slice(0, size / 2);
+        const cards = [...pairs, ...pairs].sort(() => Math.random() - 0.5);
 
-        this.cards.forEach((card) => {
-            const cardEl = document.createElement('div');
+        this.cards = cards.map((emoji, index) => ({
+            emoji,
+            id: index,
+            flipped: false,
+            matched: false
+        }));
+
+        this.cards.forEach(card => {
+            const cardEl = document.createElement('button');
             cardEl.className = 'memory-card';
             cardEl.dataset.id = card.id;
-
-            if (card.matched) {
-                cardEl.classList.add('matched');
-                cardEl.textContent = card.symbol;
-            }
-
-            cardEl.addEventListener('click', () => this.flipCard(cardEl, card));
+            cardEl.textContent = '?';
+            cardEl.addEventListener('click', () => this.flipCard(card.id, cardEl));
             board.appendChild(cardEl);
         });
-    },
+    }
 
-    flipCard(cardEl, card) {
-        if (!this.gameActive || card.matched) return;
-        if (this.flippedCards.some(c => c.id === card.id)) return;
-        if (this.flippedCards.length >= 2) return;
+    startGame() {
+        this.reset();
+        this.gameActive = true;
+        this.startTime = Date.now();
+    }
 
-        cardEl.classList.add('flipped');
-        cardEl.textContent = card.symbol;
-        this.flippedCards.push(card);
-        playSound('click');
+    flipCard(id, element) {
+        if (!this.gameActive || this.flipped.length >= 2 || this.cards[id].matched) return;
+        if (this.flipped.includes(id)) return;
 
-        if (this.flippedCards.length === 2) {
+        this.flipped.push(id);
+        this.cards[id].flipped = true;
+        element.textContent = this.cards[id].emoji;
+        element.classList.add('flipped');
+
+        if (this.flipped.length === 2) {
             this.moves++;
-            this.updateStats();
+            this.updateDisplay();
             this.checkMatch();
         }
-    },
+    }
 
     checkMatch() {
-        const [card1, card2] = this.flippedCards;
+        const [id1, id2] = this.flipped;
+        if (this.cards[id1].emoji === this.cards[id2].emoji) {
+            this.cards[id1].matched = true;
+            this.cards[id2].matched = true;
+            this.matched.push(id1, id2);
+            this.flipped = [];
 
-        if (card1.symbol === card2.symbol) {
-            // Match found
-            setTimeout(() => {
-                card1.matched = true;
-                card2.matched = true;
-                this.matchedPairs++;
-                playSound('success');
-
-                document.querySelector(`[data-id="${card1.id}"]`)?.classList.add('matched');
-                document.querySelector(`[data-id="${card2.id}"]`)?.classList.add('matched');
-
-                this.flippedCards = [];
-
-                if (this.matchedPairs === this.cards.length / 2) {
-                    this.gameWon();
-                }
-            }, 600);
+            if (this.matched.length === this.cards.length) {
+                this.endGame();
+            }
         } else {
-            // No match
             setTimeout(() => {
-                document.querySelector(`[data-id="${card1.id}"]`)?.classList.remove('flipped');
-                document.querySelector(`[data-id="${card2.id}"]`)?.classList.remove('flipped');
-
-                document.querySelector(`[data-id="${card1.id}"]`).textContent = '';
-                document.querySelector(`[data-id="${card2.id}"]`).textContent = '';
-
-                this.flippedCards = [];
+                document.querySelectorAll('.memory-card').forEach((el, idx) => {
+                    if (!this.cards[idx].matched) {
+                        el.textContent = '?';
+                        el.classList.remove('flipped');
+                        this.cards[idx].flipped = false;
+                    }
+                });
+                this.flipped = [];
             }, 1000);
         }
-    },
-
-    gameWon() {
-        this.gameActive = false;
-        this.gameTime = Date.now() - this.startTime;
-
-        // Save score
-        saveScore('memory', this.moves, { time: this.gameTime });
-
-        // Update best time
-        if (!this.bestTime || this.gameTime < this.bestTime) {
-            this.bestTime = this.gameTime;
-        }
-        this.updateBestTimeDisplay();
-
-        playSound('win');
-        const message = `🎉 You won!\nMoves: ${this.moves}\nTime: ${formatTime(this.gameTime)}${this.bestTime === this.gameTime ? '\n🏆 New record!' : ''}`;
-        setTimeout(() => {
-            alert(message);
-        }, 300);
-    },
-
-    updateStats() {
-        document.getElementById('memory-moves').textContent = this.moves;
-        document.getElementById('memory-matches').textContent = this.matchedPairs;
-    },
-
-    updateBestTimeDisplay() {
-        const bestTimeEl = document.getElementById('memory-best-time');
-        if (bestTimeEl) {
-            bestTimeEl.textContent = this.bestTime ? formatTime(this.bestTime) : '--:--';
-        }
     }
-};
 
-// Export for use in main.js
-window.memoryGame = memoryGame;
+    updateDisplay() {
+        const movesEl = document.getElementById('memory-moves');
+        const matchesEl = document.getElementById('memory-matches');
+        if (movesEl) movesEl.textContent = this.moves;
+        if (matchesEl) matchesEl.textContent = this.matched.length / 2;
+    }
+
+    endGame() {
+        this.gameActive = false;
+        const time = Math.floor((Date.now() - this.startTime) / 1000);
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        const bestTimeEl = document.getElementById('memory-best-time');
+        if (bestTimeEl) bestTimeEl.textContent = timeStr;
+        
+        alert(`You won in ${this.moves} moves and ${timeStr}!`);
+    }
+
+    reset() {
+        this.flipped = [];
+        this.matched = [];
+        this.moves = 0;
+        this.gameActive = false;
+        this.updateDisplay();
+        document.querySelectorAll('.memory-card').forEach(el => {
+            el.textContent = '?';
+            el.classList.remove('flipped', 'matched');
+        });
+    }
+}
+
+let memoryGame = null;
+document.addEventListener('DOMContentLoaded', () => {
+    memoryGame = new MemoryGame();
+});
