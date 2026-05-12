@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farris Games - Play Free Games Online</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/games.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -17,9 +18,7 @@
             </div>
             <ul class="nav-menu">
                 <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
-                <li><a href="#tictactoe" class="nav-link" data-section="tictactoe">Tic Tac Toe</a></li>
-                <li><a href="#snake" class="nav-link" data-section="snake">Snake</a></li>
-                <li><a href="#memory" class="nav-link" data-section="memory">Memory Match</a></li>
+                <li><a href="#games" class="nav-link" data-section="games">Games</a></li>
                 <li><a href="#leaderboard" class="nav-link" data-section="leaderboard">Leaderboard</a></li>
                 <li class="theme-toggle">
                     <button id="themeBtn" title="Toggle Dark Mode">
@@ -47,55 +46,119 @@
             <div class="home-content">
                 <div class="hero">
                     <h1 class="title">Welcome to Farris Games</h1>
-                    <p class="subtitle">Play our collection of classic games online</p>
+                    <p class="subtitle">Play 15+ classic and modern games online for free</p>
                     <div class="hero-buttons">
-                        <button class="btn btn-primary" data-section="tictactoe">Play Tic Tac Toe</button>
-                        <button class="btn btn-primary" data-section="snake">Play Snake</button>
-                        <button class="btn btn-primary" data-section="memory">Play Memory Match</button>
+                        <button class="btn btn-primary" data-section="games">Browse All Games</button>
+                        <button class="btn btn-secondary" data-section="leaderboard">View Leaderboard</button>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="stat-card">
+                        <span class="stat-number">15+</span>
+                        <span class="stat-label">Games</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalPlays">0</span>
+                        <span class="stat-label">Times Played</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalScore">0</span>
+                        <span class="stat-label">Total Score</span>
                     </div>
                 </div>
 
                 <div class="games-preview">
-                    <div class="game-card">
-                        <div class="game-icon">
-                            <i class="fas fa-hashtag"></i>
+                    <h2>Featured Games</h2>
+                    <div class="games-grid-preview">
+                        <div class="game-card">
+                            <div class="game-icon">
+                                <i class="fas fa-hashtag"></i>
+                            </div>
+                            <h3>Tic Tac Toe</h3>
+                            <p>Classic game of strategy. Beat the computer!</p>
+                            <button class="btn btn-secondary" data-section="tictactoe">Play</button>
                         </div>
-                        <h3>Tic Tac Toe</h3>
-                        <p>Classic game of strategy. Beat the computer or play with a friend!</p>
-                        <button class="btn btn-secondary" data-section="tictactoe">Play Now</button>
-                    </div>
 
-                    <div class="game-card">
-                        <div class="game-icon">
-                            <i class="fas fa-snake"></i>
+                        <div class="game-card">
+                            <div class="game-icon">
+                                <i class="fas fa-snake"></i>
+                            </div>
+                            <h3>Snake Game</h3>
+                            <p>Guide the snake and beat your high score!</p>
+                            <button class="btn btn-secondary" data-section="snake">Play</button>
                         </div>
-                        <h3>Snake Game</h3>
-                        <p>Guide the snake, collect food, and try to beat your high score!</p>
-                        <button class="btn btn-secondary" data-section="snake">Play Now</button>
-                    </div>
 
-                    <div class="game-card">
-                        <div class="game-icon">
-                            <i class="fas fa-brain"></i>
+                        <div class="game-card">
+                            <div class="game-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h3>Memory Match</h3>
+                            <p>Test your memory by matching pairs!</p>
+                            <button class="btn btn-secondary" data-section="memory">Play</button>
                         </div>
-                        <h3>Memory Match</h3>
-                        <p>Test your memory by matching pairs. How fast can you solve it?</p>
-                        <button class="btn btn-secondary" data-section="memory">Play Now</button>
+
+                        <div class="game-card">
+                            <div class="game-icon">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <h3>2048</h3>
+                            <p>Merge tiles to reach 2048!</p>
+                            <button class="btn btn-secondary" data-section="2048">Play</button>
+                        </div>
+
+                        <div class="game-card">
+                            <div class="game-icon">
+                                <i class="fas fa-dove"></i>
+                            </div>
+                            <h3>Flappy Bird</h3>
+                            <p>Tap to fly! Avoid the obstacles!</p>
+                            <button class="btn btn-secondary" data-section="flappy">Play</button>
+                        </div>
+
+                        <div class="game-card">
+                            <div class="game-icon">
+                                <i class="fas fa-table-tennis"></i>
+                            </div>
+                            <h3>Pong</h3>
+                            <p>Classic arcade paddle game!</p>
+                            <button class="btn btn-secondary" data-section="pong">Play</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Tic Tac Toe Section -->
+        <!-- Games Section -->
+        <section id="games" class="section">
+            <div class="games-header">
+                <h2>All Games</h2>
+                <div class="games-filter">
+                    <input type="text" id="gameSearch" placeholder="Search games..." class="search-input">
+                    <select id="gameCategory" class="filter-select">
+                        <option value="all">All Categories</option>
+                        <option value="logic">Logic</option>
+                        <option value="action">Action</option>
+                        <option value="puzzle">Puzzle</option>
+                        <option value="memory">Memory</option>
+                    </select>
+                </div>
+            </div>
+            <div class="games-grid" id="gamesGrid">
+                <!-- Game cards populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Individual Game Sections -->
+        <!-- Tic Tac Toe -->
         <section id="tictactoe" class="section">
             <div class="game-container">
                 <div class="game-header">
                     <h2>Tic Tac Toe</h2>
                     <button class="btn btn-back" data-section="home">
-                        <i class="fas fa-arrow-left"></i> Back to Home
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                 </div>
-
                 <div class="tictactoe-game">
                     <div class="score-board">
                         <div class="score-item">
@@ -111,9 +174,7 @@
                             <span id="ttt-ai-score">0</span>
                         </div>
                     </div>
-
                     <div class="game-status" id="ttt-status">Your turn (X)</div>
-
                     <div class="board" id="tictactoe-board">
                         <div class="cell" data-index="0"></div>
                         <div class="cell" data-index="1"></div>
@@ -125,7 +186,6 @@
                         <div class="cell" data-index="7"></div>
                         <div class="cell" data-index="8"></div>
                     </div>
-
                     <div class="game-controls">
                         <button class="btn btn-primary" id="ttt-reset">New Game</button>
                         <button class="btn btn-secondary" id="ttt-reset-scores">Reset Scores</button>
@@ -134,16 +194,15 @@
             </div>
         </section>
 
-        <!-- Snake Section -->
+        <!-- Snake -->
         <section id="snake" class="section">
             <div class="game-container">
                 <div class="game-header">
                     <h2>Snake Game</h2>
                     <button class="btn btn-back" data-section="home">
-                        <i class="fas fa-arrow-left"></i> Back to Home
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                 </div>
-
                 <div class="snake-game">
                     <div class="snake-info">
                         <div class="info-item">
@@ -159,7 +218,6 @@
                             <span id="snake-speed">1</span>
                         </div>
                     </div>
-
                     <div class="difficulty-selector">
                         <label>Difficulty:</label>
                         <select id="snake-difficulty">
@@ -168,15 +226,12 @@
                             <option value="hard">Hard</option>
                         </select>
                     </div>
-
                     <div id="snake-canvas-container" class="canvas-container">
                         <canvas id="snakeCanvas" width="400" height="400"></canvas>
                     </div>
-
                     <div class="snake-instructions">
-                        <p><strong>Controls:</strong> Use Arrow Keys or WASD to move the snake</p>
+                        <p><strong>Controls:</strong> Use Arrow Keys or WASD to move</p>
                     </div>
-
                     <div class="game-controls">
                         <button class="btn btn-primary" id="snake-start">Start Game</button>
                         <button class="btn btn-secondary" id="snake-reset">Reset</button>
@@ -185,16 +240,15 @@
             </div>
         </section>
 
-        <!-- Memory Match Section -->
+        <!-- Memory Match -->
         <section id="memory" class="section">
             <div class="game-container">
                 <div class="game-header">
                     <h2>Memory Match</h2>
                     <button class="btn btn-back" data-section="home">
-                        <i class="fas fa-arrow-left"></i> Back to Home
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                 </div>
-
                 <div class="memory-game">
                     <div class="memory-info">
                         <div class="info-item">
@@ -210,7 +264,6 @@
                             <span id="memory-best-time">--:--</span>
                         </div>
                     </div>
-
                     <div class="difficulty-selector">
                         <label>Difficulty:</label>
                         <select id="memory-difficulty">
@@ -219,14 +272,380 @@
                             <option value="hard">Hard (6x6)</option>
                         </select>
                     </div>
-
                     <div class="game-status" id="memory-status"></div>
-
                     <div id="memory-board" class="memory-board"></div>
-
                     <div class="game-controls">
                         <button class="btn btn-primary" id="memory-start">New Game</button>
                         <button class="btn btn-secondary" id="memory-reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2048 -->
+        <section id="2048" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>2048</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="game-2048">
+                    <div class="info-2048">
+                        <div class="score-display">
+                            <span>Score: <span id="game2048-score">0</span></span>
+                        </div>
+                    </div>
+                    <div id="game-board-2048" class="board-2048"></div>
+                    <div class="game-instructions">
+                        <p>Use Arrow Keys to move tiles. Merge tiles with the same number to reach 2048!</p>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="btn-new-game-2048">New Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flappy Bird -->
+        <section id="flappy" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Flappy Bird</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="flappy-game">
+                    <div class="flappy-info">
+                        <div class="info-item">
+                            <span>Score:</span>
+                            <span id="flappy-score">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Best Score:</span>
+                            <span id="flappy-best">0</span>
+                        </div>
+                    </div>
+                    <div id="flappy-canvas-container" class="canvas-container">
+                        <canvas id="flappyCanvas" width="400" height="500"></canvas>
+                    </div>
+                    <div class="flappy-instructions">
+                        <p><strong>Controls:</strong> Click or press Space to fly</p>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="flappy-start">Start Game</button>
+                        <button class="btn btn-secondary" id="flappy-reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pong -->
+        <section id="pong" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Pong</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="pong-game">
+                    <div class="pong-info">
+                        <div class="score-display">
+                            <span>Player: <span id="pong-player-score">0</span></span>
+                            <span>AI: <span id="pong-ai-score">0</span></span>
+                        </div>
+                    </div>
+                    <div id="pong-canvas-container" class="canvas-container">
+                        <canvas id="pongCanvas" width="800" height="400"></canvas>
+                    </div>
+                    <div class="pong-instructions">
+                        <p><strong>Controls:</strong> Use W/S or Arrow Keys to move your paddle</p>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="pong-start">Start Game</button>
+                        <button class="btn btn-secondary" id="pong-reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Breakout -->
+        <section id="breakout" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Breakout</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="breakout-game">
+                    <div class="breakout-info">
+                        <div class="info-item">
+                            <span>Score: <span id="breakout-score">0</span></span>
+                        </div>
+                        <div class="info-item">
+                            <span>Level: <span id="breakout-level">1</span></span>
+                        </div>
+                    </div>
+                    <div id="breakout-canvas-container" class="canvas-container">
+                        <canvas id="breakoutCanvas" width="800" height="400"></canvas>
+                    </div>
+                    <div class="game-instructions">
+                        <p><strong>Controls:</strong> Use Mouse or Arrow Keys to move paddle</p>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="breakout-start">Start Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hangman -->
+        <section id="hangman" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Hangman</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="hangman-game">
+                    <div class="hangman-info">
+                        <div class="info-item">
+                            <span>Wrong Guesses:</span>
+                            <span id="hangman-wrong">0</span> / 6
+                        </div>
+                        <div class="info-item">
+                            <span>Word:</span>
+                            <span id="hangman-word"></span>
+                        </div>
+                    </div>
+                    <div id="hangman-drawing"></div>
+                    <div id="hangman-letters" class="letter-buttons"></div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="hangman-new">New Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Connect 4 -->
+        <section id="connect4" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Connect 4</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="connect4-game">
+                    <div class="game-status" id="connect4-status"></div>
+                    <div id="connect4-board" class="connect4-board"></div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="connect4-new">New Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Minesweeper -->
+        <section id="minesweeper" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Minesweeper</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="minesweeper-game">
+                    <div class="minesweeper-info">
+                        <div class="info-item">
+                            <span>Mines Left:</span>
+                            <span id="mines-left">10</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Time:</span>
+                            <span id="minesweeper-timer">0:00</span>
+                        </div>
+                    </div>
+                    <div class="difficulty-selector">
+                        <label>Difficulty:</label>
+                        <select id="minesweeper-difficulty">
+                            <option value="easy">Easy (8x8, 10 mines)</option>
+                            <option value="medium" selected>Medium (16x16, 40 mines)</option>
+                            <option value="hard">Hard (16x30, 99 mines)</option>
+                        </select>
+                    </div>
+                    <div id="minesweeper-board" class="minesweeper-board"></div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="minesweeper-new">New Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Number Guess -->
+        <section id="numberguess" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Number Guess</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="numberguess-game">
+                    <div class="game-instructions">
+                        <p>Guess a number between 1 and 100. I'll tell you if it's too high or too low!</p>
+                    </div>
+                    <div class="numberguess-info">
+                        <div class="info-item">
+                            <span>Attempts:</span>
+                            <span id="ng-attempts">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Best Score:</span>
+                            <span id="ng-best">--</span>
+                        </div>
+                    </div>
+                    <div class="numberguess-input">
+                        <input type="number" id="ng-input" placeholder="Enter your guess..." min="1" max="100">
+                        <button class="btn btn-primary" id="ng-submit">Submit</button>
+                    </div>
+                    <div id="ng-feedback" class="game-feedback"></div>
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" id="ng-new">New Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Simon Says -->
+        <section id="simon" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Simon Says</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="simon-game">
+                    <div class="simon-info">
+                        <div class="info-item">
+                            <span>Level:</span>
+                            <span id="simon-level">0</span>
+                        </div>
+                    </div>
+                    <div id="simon-board" class="simon-board">
+                        <button class="simon-btn" data-color="0"></button>
+                        <button class="simon-btn" data-color="1"></button>
+                        <button class="simon-btn" data-color="2"></button>
+                        <button class="simon-btn" data-color="3"></button>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="simon-start">Start Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wordle -->
+        <section id="wordle" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Wordle</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="wordle-game">
+                    <div class="wordle-info">
+                        <span>Attempts remaining: <span id="wordle-attempts">6</span></span>
+                    </div>
+                    <div id="wordle-board" class="wordle-board"></div>
+                    <div id="wordle-keyboard" class="wordle-keyboard"></div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="wordle-new">New Game</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rock Paper Scissors -->
+        <section id="rockpaperscissors" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Rock Paper Scissors</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="rps-game">
+                    <div class="rps-scores">
+                        <div class="score-item">
+                            <span>You</span>
+                            <span id="rps-player-score">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span>Draws</span>
+                            <span id="rps-draws">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span>AI</span>
+                            <span id="rps-ai-score">0</span>
+                        </div>
+                    </div>
+                    <div class="rps-choices">
+                        <button class="rps-choice" data-choice="rock">
+                            <i class="fas fa-hand-rock"></i>
+                            <span>Rock</span>
+                        </button>
+                        <button class="rps-choice" data-choice="paper">
+                            <i class="fas fa-hand-paper"></i>
+                            <span>Paper</span>
+                        </button>
+                        <button class="rps-choice" data-choice="scissors">
+                            <i class="fas fa-hand-scissors"></i>
+                            <span>Scissors</span>
+                        </button>
+                    </div>
+                    <div id="rps-result" class="rps-result"></div>
+                    <div class="game-controls">
+                        <button class="btn btn-secondary" id="rps-reset">Reset Scores</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dice Game -->
+        <section id="dice" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Dice Roller</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                <div class="dice-game">
+                    <div class="dice-info">
+                        <label>Number of Dice:</label>
+                        <select id="dice-count">
+                            <option value="1">1 Dice</option>
+                            <option value="2" selected>2 Dice</option>
+                            <option value="3">3 Dice</option>
+                            <option value="4">4 Dice</option>
+                            <option value="5">5 Dice</option>
+                            <option value="6">6 Dice</option>
+                        </select>
+                    </div>
+                    <div id="dice-display" class="dice-display"></div>
+                    <div class="dice-result">
+                        <span>Total: <span id="dice-total">0</span></span>
+                    </div>
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="dice-roll">Roll Dice</button>
                     </div>
                 </div>
             </div>
@@ -236,12 +655,11 @@
         <section id="leaderboard" class="section">
             <div class="game-container">
                 <div class="game-header">
-                    <h2>Leaderboard</h2>
+                    <h2>🏆 Leaderboard</h2>
                     <button class="btn btn-back" data-section="home">
-                        <i class="fas fa-arrow-left"></i> Back to Home
+                        <i class="fas fa-arrow-left"></i> Back
                     </button>
                 </div>
-
                 <div class="leaderboard-content">
                     <div class="leaderboard-section">
                         <h3>Snake - High Scores</h3>
@@ -249,14 +667,12 @@
                             <p class="empty-message">No scores yet. Play a game to get on the leaderboard!</p>
                         </div>
                     </div>
-
                     <div class="leaderboard-section">
                         <h3>Memory Match - Best Times</h3>
                         <div id="memory-leaderboard" class="leaderboard-list">
                             <p class="empty-message">No scores yet. Play a game to get on the leaderboard!</p>
                         </div>
                     </div>
-
                     <div class="leaderboard-section">
                         <h3>Tic Tac Toe - Win Stats</h3>
                         <div id="tictactoe-leaderboard" class="leaderboard-list">
@@ -274,7 +690,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="leaderboard-actions">
                         <button class="btn btn-secondary" id="clear-all-scores">Clear All Scores</button>
                     </div>
@@ -288,10 +703,27 @@
         <p>&copy; 2026 Farris Games. All rights reserved. | Built with <i class="fas fa-heart"></i> using HTML, CSS & JavaScript</p>
     </footer>
 
+    <!-- Audio element for sound effects -->
+    <audio id="soundEffect" preload="auto"></audio>
+
     <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
     <script src="js/main.js"></script>
     <script src="js/games/tictactoe.js"></script>
     <script src="js/games/snake.js"></script>
     <script src="js/games/memory.js"></script>
+    <script src="js/games/2048.js"></script>
+    <script src="js/games/flappy.js"></script>
+    <script src="js/games/pong.js"></script>
+    <script src="js/games/breakout.js"></script>
+    <script src="js/games/hangman.js"></script>
+    <script src="js/games/connect4.js"></script>
+    <script src="js/games/minesweeper.js"></script>
+    <script src="js/games/numberguess.js"></script>
+    <script src="js/games/simon.js"></script>
+    <script src="js/games/wordle.js"></script>
+    <script src="js/games/rockpaperscissors.js"></script>
+    <script src="js/games/dice.js"></script>
 </body>
 </html>
