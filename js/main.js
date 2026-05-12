@@ -1,366 +1,201 @@
-// ========================================
-// MAIN APPLICATION LOGIC
-// ========================================
-
-// State Management
-const appState = {
-    currentSection: 'home',
-    darkMode: localStorage.getItem('darkMode') === 'true',
-    soundEnabled: localStorage.getItem('soundEnabled') !== 'false',
-    scores: {
-        snake: JSON.parse(localStorage.getItem('snakeScores')) || [],
-        memory: JSON.parse(localStorage.getItem('memoryScores')) || [],
-        tictactoe: JSON.parse(localStorage.getItem('tictactoeScores')) || { wins: 0, losses: 0, draws: 0 }
+// Main Application Logic
+class FarrisGames {
+    constructor() {
+        this.currentSection = 'home';
+        this.soundEnabled = true;
+        this.init();
     }
-};
 
-// Initialize App
-document.addEventListener('DOMContentLoaded', () => {
-    initializeTheme();
-    initializeSound();
-    setupNavigation();
-    setupHamburgerMenu();
-    loadLeaderboard();
-});
+    init() {
+        this.setupEventListeners();
+        this.loadTheme();
+        this.loadSound();
+        this.populateGamesGrid();
+        this.updateStats();
+        this.setupGameNavigation();
+    }
 
-// ========================================
-// NAVIGATION
-// ========================================
-
-function setupNavigation() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const buttons = document.querySelectorAll('[data-section]');
-
-    // Navigation links
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const section = link.getAttribute('data-section');
-            showSection(section);
-            updateActiveNavLink(section);
-            closeHamburgerMenu();
+    setupEventListeners() {
+        // Navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.dataset.section;
+                this.navigateToSection(section);
+            });
         });
-    });
 
-    // Other buttons with section data
-    buttons.forEach(btn => {
-        if (!btn.classList.contains('nav-link')) {
+        // Game card buttons
+        document.querySelectorAll('[data-section]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (!btn.classList.contains('nav-link')) {
+                    e.preventDefault();
+                    this.navigateToSection(btn.dataset.section);
+                }
+            });
+        });
+
+        // Theme toggle
+        const themeBtn = document.getElementById('themeBtn');
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                ThemeManager.toggle();
+                this.updateThemeIcon();
+            });
+        }
+
+        // Sound toggle
+        const soundBtn = document.getElementById('soundBtn');
+        if (soundBtn) {
+            soundBtn.addEventListener('click', () => {
+                SoundManager.toggle();
+                this.updateSoundIcon();
+            });
+        }
+
+        // Search and filter
+        const searchInput = document.getElementById('gameSearch');
+        const categorySelect = document.getElementById('gameCategory');
+        if (searchInput) {
+            searchInput.addEventListener('input', () => this.filterGames());
+        }
+        if (categorySelect) {
+            categorySelect.addEventListener('change', () => this.filterGames());
+        }
+
+        // Leaderboard clear button
+        const clearBtn = document.getElementById('clear-all-scores');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => GameStorage.clearAllScores());
+        }
+    }
+
+    setupGameNavigation() {
+        document.querySelectorAll('.btn-back').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                const section = btn.getAttribute('data-section');
-                showSection(section);
-                updateActiveNavLink(section);
-                closeHamburgerMenu();
+                this.navigateToSection(btn.dataset.section);
             });
+        });
+    }
+
+    navigateToSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Show selected section
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.classList.add('active');
+            this.currentSection = sectionId;
         }
-    });
-}
 
-function showSection(sectionId) {
-    // Hide all sections
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
-    });
+        // Update nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.section === sectionId) {
+                link.classList.add('active');
+            }
+        });
 
-    // Show selected section
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.classList.add('active');
-        appState.currentSection = sectionId;
-        
-        // Initialize games when section is shown
-        if (sectionId === 'tictactoe') {
-            initTicTacToe();
-        } else if (sectionId === 'snake') {
-            initSnake();
-        } else if (sectionId === 'memory') {
-            initMemory();
-        } else if (sectionId === 'leaderboard') {
-            loadLeaderboard();
-        }
-    }
-}
-
-function updateActiveNavLink(sectionId) {
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('data-section') === sectionId) {
-            link.classList.add('active');
-        }
-    });
-}
-
-// ========================================
-// HAMBURGER MENU
-// ========================================
-
-function setupHamburgerMenu() {
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-
-    hamburger.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-        hamburger.classList.toggle('active');
-    });
-}
-
-function closeHamburgerMenu() {
-    const navMenu = document.querySelector('.nav-menu');
-    const hamburger = document.querySelector('.hamburger');
-    navMenu.classList.remove('active');
-    hamburger.classList.remove('active');
-}
-
-// ========================================
-// THEME MANAGEMENT
-// ========================================
-
-function initializeTheme() {
-    const themeBtn = document.getElementById('themeBtn');
-    
-    if (appState.darkMode) {
-        document.body.classList.add('dark-mode');
-        updateThemeIcon();
+        // Scroll to top
+        window.scrollTo(0, 0);
     }
 
-    themeBtn.addEventListener('click', toggleTheme);
-}
+    populateGamesGrid() {
+        const gamesGrid = document.getElementById('gamesGrid');
+        if (!gamesGrid) return;
 
-function toggleTheme() {
-    appState.darkMode = !appState.darkMode;
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', appState.darkMode);
-    updateThemeIcon();
-    playSound('click');
-}
-
-function updateThemeIcon() {
-    const themeBtn = document.getElementById('themeBtn');
-    const icon = themeBtn.querySelector('i');
-    if (appState.darkMode) {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-        themeBtn.title = 'Toggle Light Mode';
-    } else {
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
-        themeBtn.title = 'Toggle Dark Mode';
-    }
-}
-
-// ========================================
-// SOUND MANAGEMENT
-// ========================================
-
-function initializeSound() {
-    const soundBtn = document.getElementById('soundBtn');
-    updateSoundIcon();
-    soundBtn.addEventListener('click', toggleSound);
-}
-
-function toggleSound() {
-    appState.soundEnabled = !appState.soundEnabled;
-    localStorage.setItem('soundEnabled', appState.soundEnabled);
-    updateSoundIcon();
-}
-
-function updateSoundIcon() {
-    const soundBtn = document.getElementById('soundBtn');
-    const icon = soundBtn.querySelector('i');
-    if (appState.soundEnabled) {
-        icon.classList.remove('fa-volume-mute');
-        icon.classList.add('fa-volume-up');
-        soundBtn.title = 'Mute Sound';
-    } else {
-        icon.classList.remove('fa-volume-up');
-        icon.classList.add('fa-volume-mute');
-        soundBtn.title = 'Unmute Sound';
-    }
-}
-
-function playSound(type) {
-    if (!appState.soundEnabled) return;
-
-    // Create sound using Web Audio API
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    // Different sounds for different events
-    switch (type) {
-        case 'click':
-            oscillator.frequency.value = 800;
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.1);
-            break;
-        case 'success':
-            oscillator.frequency.value = 1200;
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.2);
-            break;
-        case 'error':
-            oscillator.frequency.value = 400;
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.15);
-            break;
-        case 'win':
-            // Play a simple win melody
-            const notes = [800, 1000, 1200];
-            notes.forEach((freq, i) => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.1, audioContext.currentTime + (i * 0.1));
-                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + (i * 0.1) + 0.1);
-                osc.start(audioContext.currentTime + (i * 0.1));
-                osc.stop(audioContext.currentTime + (i * 0.1) + 0.1);
-            });
-            break;
-    }
-}
-
-// ========================================
-// LEADERBOARD
-// ========================================
-
-function loadLeaderboard() {
-    // Snake Leaderboard
-    const snakeLeaderboard = document.getElementById('snake-leaderboard');
-    const snakeScores = appState.scores.snake;
-    
-    if (snakeScores.length > 0) {
-        snakeScores.sort((a, b) => b.score - a.score);
-        const topScores = snakeScores.slice(0, 10);
-        snakeLeaderboard.innerHTML = topScores.map((entry, index) => `
-            <div class="leaderboard-entry">
-                <div class="entry-rank">
-                    <div class="rank-number">${index + 1}</div>
-                    <div class="entry-name">Player</div>
-                </div>
-                <div class="entry-score">${entry.score} pts</div>
+        gamesGrid.innerHTML = GAMES.map(game => `
+            <div class="game-card" data-category="${game.category}" data-game="${game.id}">
+                <div class="game-icon">${game.icon}</div>
+                <h3>${game.name}</h3>
+                <p>${game.description}</p>
+                <button class="btn btn-secondary" data-section="${game.id}">Play</button>
             </div>
         `).join('');
-    } else {
-        snakeLeaderboard.innerHTML = '<p class="empty-message">No scores yet. Play a game to get on the leaderboard!</p>';
+
+        // Reattach event listeners
+        gamesGrid.querySelectorAll('[data-section]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.navigateToSection(btn.dataset.section);
+            });
+        });
     }
 
-    // Memory Leaderboard
-    const memoryLeaderboard = document.getElementById('memory-leaderboard');
-    const memoryScores = appState.scores.memory;
-    
-    if (memoryScores.length > 0) {
-        memoryScores.sort((a, b) => a.time - b.time);
-        const topTimes = memoryScores.slice(0, 10);
-        memoryLeaderboard.innerHTML = topTimes.map((entry, index) => `
-            <div class="leaderboard-entry">
-                <div class="entry-rank">
-                    <div class="rank-number">${index + 1}</div>
-                    <div class="entry-name">Player</div>
-                </div>
-                <div class="entry-score">${formatTime(entry.time)}</div>
-            </div>
-        `).join('');
-    } else {
-        memoryLeaderboard.innerHTML = '<p class="empty-message">No scores yet. Play a game to get on the leaderboard!</p>';
+    filterGames() {
+        const searchValue = document.getElementById('gameSearch')?.value.toLowerCase() || '';
+        const categoryValue = document.getElementById('gameCategory')?.value || 'all';
+        const cards = document.querySelectorAll('.game-card');
+
+        cards.forEach(card => {
+            const name = card.querySelector('h3').textContent.toLowerCase();
+            const category = card.dataset.category;
+            const matchesSearch = name.includes(searchValue);
+            const matchesCategory = categoryValue === 'all' || category === categoryValue;
+
+            card.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+        });
     }
 
-    // Tic Tac Toe Stats
-    const tttStats = appState.scores.tictactoe;
-    document.getElementById('ttt-wins-stat').textContent = tttStats.wins || 0;
-    document.getElementById('ttt-ai-wins-stat').textContent = tttStats.losses || 0;
-    document.getElementById('ttt-draws-stat').textContent = tttStats.draws || 0;
-
-    // Clear all scores button
-    const clearBtn = document.getElementById('clear-all-scores');
-    clearBtn.addEventListener('click', clearAllScores);
-}
-
-function clearAllScores() {
-    if (confirm('Are you sure you want to clear all scores? This cannot be undone.')) {
-        localStorage.removeItem('snakeScores');
-        localStorage.removeItem('memoryScores');
-        localStorage.removeItem('tictactoeScores');
-        appState.scores = {
-            snake: [],
-            memory: [],
-            tictactoe: { wins: 0, losses: 0, draws: 0 }
-        };
-        loadLeaderboard();
-        playSound('success');
+    updateThemeIcon() {
+        const themeBtn = document.getElementById('themeBtn');
+        if (themeBtn) {
+            const isDark = document.body.classList.contains('dark-mode');
+            themeBtn.innerHTML = isDark ? '☀️' : '🌙';
+        }
     }
-}
 
-// ========================================
-// UTILITY FUNCTIONS
-// ========================================
+    updateSoundIcon() {
+        const soundBtn = document.getElementById('soundBtn');
+        if (soundBtn) {
+            const isMuted = localStorage.getItem(STORAGE_KEYS.SOUND) === 'false';
+            soundBtn.innerHTML = isMuted ? '🔇' : '🔊';
+        }
+    }
 
-function formatTime(milliseconds) {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
+    loadTheme() {
+        ThemeManager.init();
+        this.updateThemeIcon();
+    }
 
-function saveScore(game, score, additionalData = {}) {
-    const timestamp = new Date().toISOString();
-    
-    if (game === 'snake') {
-        const snakeScores = appState.scores.snake;
-        snakeScores.push({ score, timestamp, ...additionalData });
-        localStorage.setItem('snakeScores', JSON.stringify(snakeScores));
-        appState.scores.snake = snakeScores;
-    } else if (game === 'memory') {
-        const memoryScores = appState.scores.memory;
-        memoryScores.push({ score, timestamp, ...additionalData });
-        localStorage.setItem('memoryScores', JSON.stringify(memoryScores));
-        appState.scores.memory = memoryScores;
+    loadSound() {
+        SoundManager.init();
+        this.updateSoundIcon();
+    }
+
+    updateStats() {
+        const stats = GameStorage.getStats();
+        const totalPlays = Object.values(stats).reduce((sum, game) => sum + (game.plays || 0), 0);
+        const totalScore = Object.values(stats).reduce((sum, game) => sum + (game.totalScore || 0), 0);
+
+        const playsEl = document.getElementById('totalPlays');
+        const scoreEl = document.getElementById('totalScore');
+        if (playsEl) playsEl.textContent = totalPlays;
+        if (scoreEl) scoreEl.textContent = totalScore;
     }
 }
 
-function updateTicTacToeStats(result) {
-    if (result === 'win') {
-        appState.scores.tictactoe.wins++;
-    } else if (result === 'loss') {
-        appState.scores.tictactoe.losses++;
-    } else if (result === 'draw') {
-        appState.scores.tictactoe.draws++;
-    }
-    localStorage.setItem('tictactoeScores', JSON.stringify(appState.scores.tictactoe));
-}
+// Initialize app when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.game = new FarrisGames();
+});
 
-// ========================================
-// PLACEHOLDER GAME INITIALIZERS
-// ========================================
-
-function initTicTacToe() {
-    if (typeof window.tictactoeGame !== 'undefined') {
-        window.tictactoeGame.init();
+// Helper function to navigate to game
+function navigateTo(section) {
+    if (window.game) {
+        window.game.navigateToSection(section);
     }
 }
 
-function initSnake() {
-    if (typeof window.snakeGame !== 'undefined') {
-        window.snakeGame.init();
-    }
+function backToGames() {
+    navigateTo('games');
 }
 
-function initMemory() {
-    if (typeof window.memoryGame !== 'undefined') {
-        window.memoryGame.init();
-    }
+function resetCurrentGame() {
+    // Will be overridden by individual games
+    console.log('Reset current game');
 }
-
-// Initialize home section on load
-showSection('home');
-updateActiveNavLink('home');
