@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farris Games - Play Free Games Online</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-gamepad"></i>
+                <span>Farris Games</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+                <li><a href="#tictactoe" class="nav-link" data-section="tictactoe">Tic Tac Toe</a></li>
+                <li><a href="#snake" class="nav-link" data-section="snake">Snake</a></li>
+                <li><a href="#memory" class="nav-link" data-section="memory">Memory Match</a></li>
+                <li><a href="#leaderboard" class="nav-link" data-section="leaderboard">Leaderboard</a></li>
+                <li class="theme-toggle">
+                    <button id="themeBtn" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+                <li class="sound-toggle">
+                    <button id="soundBtn" title="Toggle Sound">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="home-content">
+                <div class="hero">
+                    <h1 class="title">Welcome to Farris Games</h1>
+                    <p class="subtitle">Play our collection of classic games online</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" data-section="tictactoe">Play Tic Tac Toe</button>
+                        <button class="btn btn-primary" data-section="snake">Play Snake</button>
+                        <button class="btn btn-primary" data-section="memory">Play Memory Match</button>
+                    </div>
+                </div>
+
+                <div class="games-preview">
+                    <div class="game-card">
+                        <div class="game-icon">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <h3>Tic Tac Toe</h3>
+                        <p>Classic game of strategy. Beat the computer or play with a friend!</p>
+                        <button class="btn btn-secondary" data-section="tictactoe">Play Now</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon">
+                            <i class="fas fa-snake"></i>
+                        </div>
+                        <h3>Snake Game</h3>
+                        <p>Guide the snake, collect food, and try to beat your high score!</p>
+                        <button class="btn btn-secondary" data-section="snake">Play Now</button>
+                    </div>
+
+                    <div class="game-card">
+                        <div class="game-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>Memory Match</h3>
+                        <p>Test your memory by matching pairs. How fast can you solve it?</p>
+                        <button class="btn btn-secondary" data-section="memory">Play Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tic Tac Toe Section -->
+        <section id="tictactoe" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Tic Tac Toe</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </button>
+                </div>
+
+                <div class="tictactoe-game">
+                    <div class="score-board">
+                        <div class="score-item">
+                            <span>You (X)</span>
+                            <span id="ttt-player-score">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span>Draws</span>
+                            <span id="ttt-draw-score">0</span>
+                        </div>
+                        <div class="score-item">
+                            <span>AI (O)</span>
+                            <span id="ttt-ai-score">0</span>
+                        </div>
+                    </div>
+
+                    <div class="game-status" id="ttt-status">Your turn (X)</div>
+
+                    <div class="board" id="tictactoe-board">
+                        <div class="cell" data-index="0"></div>
+                        <div class="cell" data-index="1"></div>
+                        <div class="cell" data-index="2"></div>
+                        <div class="cell" data-index="3"></div>
+                        <div class="cell" data-index="4"></div>
+                        <div class="cell" data-index="5"></div>
+                        <div class="cell" data-index="6"></div>
+                        <div class="cell" data-index="7"></div>
+                        <div class="cell" data-index="8"></div>
+                    </div>
+
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="ttt-reset">New Game</button>
+                        <button class="btn btn-secondary" id="ttt-reset-scores">Reset Scores</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Snake Section -->
+        <section id="snake" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Snake Game</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </button>
+                </div>
+
+                <div class="snake-game">
+                    <div class="snake-info">
+                        <div class="info-item">
+                            <span>Score:</span>
+                            <span id="snake-score">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span>High Score:</span>
+                            <span id="snake-highscore">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Speed:</span>
+                            <span id="snake-speed">1</span>
+                        </div>
+                    </div>
+
+                    <div class="difficulty-selector">
+                        <label>Difficulty:</label>
+                        <select id="snake-difficulty">
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+
+                    <div id="snake-canvas-container" class="canvas-container">
+                        <canvas id="snakeCanvas" width="400" height="400"></canvas>
+                    </div>
+
+                    <div class="snake-instructions">
+                        <p><strong>Controls:</strong> Use Arrow Keys or WASD to move the snake</p>
+                    </div>
+
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="snake-start">Start Game</button>
+                        <button class="btn btn-secondary" id="snake-reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Memory Match Section -->
+        <section id="memory" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Memory Match</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </button>
+                </div>
+
+                <div class="memory-game">
+                    <div class="memory-info">
+                        <div class="info-item">
+                            <span>Moves:</span>
+                            <span id="memory-moves">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Matches:</span>
+                            <span id="memory-matches">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Best Time:</span>
+                            <span id="memory-best-time">--:--</span>
+                        </div>
+                    </div>
+
+                    <div class="difficulty-selector">
+                        <label>Difficulty:</label>
+                        <select id="memory-difficulty">
+                            <option value="easy">Easy (4x4)</option>
+                            <option value="medium" selected>Medium (4x4)</option>
+                            <option value="hard">Hard (6x6)</option>
+                        </select>
+                    </div>
+
+                    <div class="game-status" id="memory-status"></div>
+
+                    <div id="memory-board" class="memory-board"></div>
+
+                    <div class="game-controls">
+                        <button class="btn btn-primary" id="memory-start">New Game</button>
+                        <button class="btn btn-secondary" id="memory-reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Section -->
+        <section id="leaderboard" class="section">
+            <div class="game-container">
+                <div class="game-header">
+                    <h2>Leaderboard</h2>
+                    <button class="btn btn-back" data-section="home">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </button>
+                </div>
+
+                <div class="leaderboard-content">
+                    <div class="leaderboard-section">
+                        <h3>Snake - High Scores</h3>
+                        <div id="snake-leaderboard" class="leaderboard-list">
+                            <p class="empty-message">No scores yet. Play a game to get on the leaderboard!</p>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-section">
+                        <h3>Memory Match - Best Times</h3>
+                        <div id="memory-leaderboard" class="leaderboard-list">
+                            <p class="empty-message">No scores yet. Play a game to get on the leaderboard!</p>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-section">
+                        <h3>Tic Tac Toe - Win Stats</h3>
+                        <div id="tictactoe-leaderboard" class="leaderboard-list">
+                            <div class="stat-item">
+                                <span>Your Wins:</span>
+                                <span id="ttt-wins-stat">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>AI Wins:</span>
+                                <span id="ttt-ai-wins-stat">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span>Draws:</span>
+                                <span id="ttt-draws-stat">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-actions">
+                        <button class="btn btn-secondary" id="clear-all-scores">Clear All Scores</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Farris Games. All rights reserved. | Built with <i class="fas fa-heart"></i> using HTML, CSS & JavaScript</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/games/tictactoe.js"></script>
+    <script src="js/games/snake.js"></script>
+    <script src="js/games/memory.js"></script>
+</body>
+</html>
