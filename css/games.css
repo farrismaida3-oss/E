@@ -1,0 +1,445 @@
+/* Additional Game-Specific Styles */
+
+/* Hangman */
+.hangman-game {
+    text-align: center;
+}
+
+.hangman-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.hangman-drawing {
+    width: 200px;
+    height: 250px;
+    margin: 1rem auto;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 4rem;
+}
+
+.letter-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+    gap: 5px;
+    margin: 1.5rem 0;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.letter-btn {
+    padding: 0.5rem;
+    border: 2px solid var(--primary-color);
+    background: transparent;
+    color: var(--primary-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.letter-btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: white;
+}
+
+.letter-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--border-color);
+}
+
+/* Connect 4 */
+.connect4-board {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin: 2rem auto;
+    width: fit-content;
+    background: var(--primary-color);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.connect4-cell {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.connect4-cell:hover {
+    background: #f0f4ff;
+}
+
+.connect4-cell.player1 {
+    background: var(--primary-color);
+}
+
+.connect4-cell.player2 {
+    background: var(--secondary-color);
+}
+
+/* Minesweeper */
+.minesweeper-board {
+    display: inline-grid;
+    gap: 2px;
+    background: #888;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+}
+
+.minesweeper-cell {
+    width: 40px;
+    height: 40px;
+    background: #ccc;
+    border: 2px outset #fff;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    user-select: none;
+    transition: 0.1s;
+}
+
+.minesweeper-cell:hover {
+    background: #ddd;
+}
+
+.minesweeper-cell.revealed {
+    background: #aaa;
+    border-style: inset;
+}
+
+.minesweeper-cell.flagged::before {
+    content: '🚩';
+    font-size: 1.2rem;
+}
+
+.minesweeper-cell.mine {
+    background: #ff6b6b;
+}
+
+/* Number Guess */
+.numberguess-input {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+}
+
+.numberguess-input input {
+    padding: 0.75rem;
+    border: 2px solid var(--primary-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 200px;
+}
+
+.numberguess-input input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.game-feedback {
+    padding: 1rem;
+    background: var(--border-color);
+    border-radius: 8px;
+    margin: 1rem 0;
+    text-align: center;
+    font-weight: 600;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-feedback.correct {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.game-feedback.wrong {
+    background: #fee2e2;
+    color: #7f1d1d;
+}
+
+.game-feedback.higher {
+    background: #dbeafe;
+    color: #0c2340;
+}
+
+.game-feedback.lower {
+    background: #fef3c7;
+    color: #78350f;
+}
+
+/* Simon Says */
+.simon-board {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: fit-content;
+    margin: 2rem auto;
+}
+
+.simon-btn {
+    width: 120px;
+    height: 120px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 2rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+}
+
+.simon-btn[data-color="0"] {
+    background: #4ade80;
+}
+
+.simon-btn[data-color="1"] {
+    background: #ef4444;
+}
+
+.simon-btn[data-color="2"] {
+    background: #fbbf24;
+}
+
+.simon-btn[data-color="3"] {
+    background: #3b82f6;
+}
+
+.simon-btn:hover,
+.simon-btn.active {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Wordle */
+.wordle-board {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 2rem auto;
+    width: fit-content;
+}
+
+.wordle-row {
+    display: flex;
+    gap: 5px;
+}
+
+.wordle-tile {
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    background: var(--light-bg);
+}
+
+.wordle-tile.correct {
+    background: var(--success-color);
+    color: white;
+    border-color: var(--success-color);
+}
+
+.wordle-tile.present {
+    background: var(--warning-color);
+    color: white;
+    border-color: var(--warning-color);
+}
+
+.wordle-tile.absent {
+    background: var(--border-color);
+    border-color: var(--border-color);
+}
+
+.wordle-keyboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+    gap: 4px;
+    max-width: 500px;
+    margin: 1.5rem auto 0;
+}
+
+.wordle-key {
+    padding: 0.5rem;
+    background: var(--border-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.wordle-key:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.wordle-key.correct {
+    background: var(--success-color);
+    color: white;
+}
+
+.wordle-key.present {
+    background: var(--warning-color);
+    color: white;
+}
+
+.wordle-key.absent {
+    opacity: 0.5;
+}
+
+/* Pong Game */
+.pong-info,
+.breakout-info {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.score-display {
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem;
+    background: var(--border-color);
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Game Info 2048 */
+.info-2048 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Flappy Game Info */
+.flappy-info {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Animations */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-10px);
+    }
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+.shake {
+    animation: shake 0.3s;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.bounce {
+    animation: bounce 0.5s;
+}
+
+/* Responsive Adjustments for Games */
+@media (max-width: 768px) {
+    .simon-btn {
+        width: 90px;
+        height: 90px;
+        font-size: 1.5rem;
+    }
+
+    .connect4-cell {
+        width: 50px;
+        height: 50px;
+    }
+
+    .minesweeper-cell {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+
+    .wordle-tile {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .numberguess-input input {
+        width: 100%;
+    }
+
+    .dice-display {
+        gap: 0.5rem;
+    }
+
+    .dice {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .simon-btn {
+        width: 70px;
+        height: 70px;
+        font-size: 1.2rem;
+    }
+
+    .wordle-tile {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .dice {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+}
